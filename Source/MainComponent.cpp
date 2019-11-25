@@ -29,5 +29,7 @@ void MainComponent::paint (Graphics& g)
 
 void MainComponent::resized()
 {
-	table.setBounds(getLocalBounds());
+	table.setBounds(5, 5, 1200, 600);
 }
+
+

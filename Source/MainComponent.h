@@ -15,6 +15,8 @@
     This component lives inside our window, and this is where you should put all
     your controls and content.
 */
+
+
 class PlaylistTableComponent :	public Component,
 								public TableListBoxModel
 {
@@ -33,7 +35,9 @@ public :
 			}
 		}
 		addAndMakeVisible(table);
-		table.setColour(ListBox::outlineColourId, Colours::grey);
+		addAndMakeVisible(debugLabel);
+		debugLabel.setText("default debug message",dontSendNotification);
+		table.setColour(ListBox::outlineColourId, Colours::red);
 		table.setOutlineThickness(1);
 		table.setMultipleSelectionEnabled(true);
 	}
@@ -56,6 +60,10 @@ public :
 			columnList = playlistData->getChildByName("HEADERS");
 
 			numRows = dataList->getNumChildElements();
+		}
+		else
+		{
+			debugLabelMsg("no such file you nob");
 		}
 	}
 
@@ -120,6 +128,52 @@ public :
 
 	
 	}
+
+	Component* refreshComponentForCell(int rowNumber, int columnId, bool /*isRowSelected*/,
+		Component* existingComponentToUpdate) override
+	{
+		if (columnId == 4)
+		{
+			auto* mySelectionBox = dynamic_cast<SelectionColumnCustomComponent*>(existingComponentToUpdate);
+
+			if (mySelectionBox == nullptr)
+			{
+				mySelectionBox = new SelectionColumnCustomComponent(*this);
+			}
+
+			mySelectionBox->setRowAndColumn(rowNumber, columnId);
+			return mySelectionBox;
+		}
+
+		if (columnId == 3)
+		{
+			auto* textLabel = dynamic_cast<EditableTextCustomComponent*> (existingComponentToUpdate);
+
+			if (textLabel==nullptr)
+			{
+				textLabel = new EditableTextCustomComponent(*this);
+			}
+
+			textLabel->setRowAndColumn(rowNumber, columnId);
+			return textLabel;
+		}
+
+		jassert(existingComponentToUpdate == nullptr);
+		return nullptr;
+	}
+
+	void debugLabelMsg(String message)
+	{
+		debugLabel.setText(message,dontSendNotification);
+	}
+
+	void resized() override
+	{
+		debugLabel.setBounds(100, 500, 500, 30);
+		table.setBoundsInset(BorderSize<int>(8));
+	}
+
+
 TableListBox table{ {}, this };
 
 private :
@@ -130,7 +184,38 @@ private :
 	XmlElement* columnList = nullptr;
 	XmlElement* dataList = nullptr;
 	int numRows = 0;
+	Label debugLabel;
 
+
+};
+
+class SelectionColumnCustomComponent : public Component
+{
+public:
+	SelectionColumnCustomComponent(PlaylistTableComponent& td)
+		: owner(td)
+	{
+		addAndMakeVisible(toggleButton);
+
+		toggleButton.onClick = [this] { owner.setSelection(row, (int)toggleButton.getToggleState()); };
+	}
+
+	void resized() override
+	{
+		toggleButton.setBoundsInset(BorderSize<int>(2));
+	}
+
+	void setRowAndColumn(int newRow, int newColumn)
+	{
+		row = newRow;
+		columnId = newColumn;
+		toggleButton.setToggleState((bool)owner.getSelection(row), dontSendNotification);
+	}
+
+private:
+	PlaylistTableComponent& owner;
+	ToggleButton toggleButton;
+	int row, columnId;
 };
 
 class EditableTextCustomComponent : public Label
@@ -166,22 +251,6 @@ private:
 	Colour textColour;
 };
 
-class SelectionColumnCustomComponent : public Component
-{
-public:
-	SelectionColumnCustomComponent(PlaylistTableComponent& td)
-		:owner(td)
-	{
-		addAndMakeVisible(toggleButton);
-		toggleButton.onClick = [this] {owner.setSelection(row, (int)toggleButton.getToggleState()); };
-	}
-private :
-	PlaylistTableComponent& owner;
-	ToggleButton toggleButton;
-	int row, columnId;
-	
-
-};
 
 //===================================================================================
 class MainComponent   : public Component
@@ -198,7 +267,6 @@ public:
 private:
     //==============================================================================
     // Your private member variables go here...
-
 	PlaylistTableComponent table;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
 };
