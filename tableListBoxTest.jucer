@@ -3,6 +3,10 @@
 <JUCERPROJECT id="DUzFes" name="tableListBoxTest" projectType="guiapp" jucerVersion="5.4.4">
   <MAINGROUP id="nPYDWz" name="tableListBoxTest">
     <GROUP id="{514ABE8F-A7D0-5731-37DB-6425269FF4B5}" name="Source">
+      <FILE id="LvWqVO" name="EditableTextCustomComponent.h" compile="0"
+            resource="0" file="Source/EditableTextCustomComponent.h"/>
+      <FILE id="FIShDZ" name="SelectionColumnCustomComponent.h" compile="0"
+            resource="0" file="Source/SelectionColumnCustomComponent.h"/>
       <FILE id="JpMvtE" name="MainComponent.h" compile="0" resource="0" file="Source/MainComponent.h"/>
       <FILE id="oOWGHl" name="MainComponent.cpp" compile="1" resource="0"
             file="Source/MainComponent.cpp"/>

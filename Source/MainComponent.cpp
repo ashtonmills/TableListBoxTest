@@ -7,6 +7,8 @@
 */
 
 #include "MainComponent.h"
+#include "SelectionColumnCustomComponent.h"
+#include "EditableTextCustomComponent.h"
 
 //==============================================================================
 MainComponent::MainComponent()
